@@ -1,0 +1,204 @@
+#
+# Copyright (c) 2008
+#      Christian CAMIER <chcamier@free.fr>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+#
+# #@ "Makefile"
+#	-- CC Utilities: Compilation rules
+#
+# Author : Christian CAMIER (chcamier@free.fr)
+#
+# Rev : 1.0 (01/21/2008)
+#
+
+TOP     ?= @ccr_top_dir@
+
+#
+# Target directories definitions
+#
+PREFIX        ?= @prefix@
+prefix        ?= @prefix@
+exec_prefix   ?= @exec_prefix@
+bindir        ?= @bindir@
+sbindir       ?= @sbindir@
+sysconfdir    ?= @sysconfdir@
+sbindir       ?= @sbindir@
+includedir    ?= @includedir@
+oldincludedir ?= @oldincludedir@
+libdir        ?= @libdir@
+libexecdir    ?= @libexecdir@
+datarootdir   ?= @datarootdir@
+mandir        ?= @mandir@
+man1dir       ?= $(mandir)/man1
+man3dir       ?= $(mandir)/man3
+docdir        ?= @docdir@
+infodir       ?= @infodir@
+localstatedir ?= @localstatedir@
+localedir     ?= @localedir@
+htmldir       ?= @htmldir@
+dvidir        ?= @dvidir@
+pdfdir        ?= @pdfdir@
+psdir         ?= @psdir@
+
+#
+# Behaviour options
+#
+
+MACROS =				\
+	-DSYSCONFDIR=\"$(sysconfdir)\"	\
+	-DPREFIX=\"$(prefix)\"
+
+#
+# Compilers options
+#
+
+MAKE    ?= make
+SUBMAKE  = $(MAKE) -f Makefile
+CC	?= LANG=C gcc
+CFLAGS	?= -g -Wall -Wunused-variable -Werror -I. -I$(TOP)/include -I$(TOP)/src -I$(COMMON) $(MACROS)
+LD	?= $(CC)
+
+INSTALL      = install
+INSTALL_LIB  = $(INSTALL) -o bin  -g bin  -m 644 -t $(libdir)
+INSTALL_INC  = $(INSTALL) -o bin  -g bin  -m 644 -t $(incdir)
+INSTALL_BIN  = $(INSTALL) -o bin  -g bin  -m 755 -t $(bindir)
+INSTALL_SBIN = $(INSTALL) -o root -g root -m 755 -t $(sbindir)
+INSTALL_MAN1 = $(INSTALL) -o bin  -g bin  -m 644 -t $(man1dir)
+INSTALL_MAN3 = $(INSTALL) -o bin  -g bin  -m 644 -t $(man3dir)
+
+#
+# Compilation rules
+#
+
+.SUFFIXES: .c .o .i .sh .po
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.po:
+	$(CC) -fPIC $(CFLAGS) -c -o $@ $<
+
+.c.i:
+	$(CC) $(CFLAGS) -E $< > $@
+
+.sh:
+	cp $< $@
+
+.py:
+	cp $< $@
+
+
+CSRCS	= $(shell echo *.c)
+PUHDRS	= $(shell ls -1 *.h | grep -v _internal)
+PRHDRS	= $(shell ls -1 *.h | grep    _internal)
+COBJS	= $(CSRCS:.c=.o)
+CCLIB	= libCCR.a
+CINCS	= $(PUHDRS)
+
+all: $(CCLIB)
+
+install: install.lib install.inc
+
+clean:
+	rm -fr $(CCLIB)
+	rm -fr $(COBJS)
+	rm -fr $(CSRCS:.c=.i);
+	rm -fr autom4te.cache config.log config.status
+	rm -fr *~ \#*
+
+distclean: clean
+	rm -fr Makefile
+	rm -fr cc_machdep.h
+
+libCCR.a: $(COBJS)
+	rm -f $@
+	ar q $@ $(COBJS)
+	ranlib $@
+
+#libCCR.so: $(SOBJS)
+
+install.inc: $(CINCS)
+	mkdir -m 755 -p $(incdir)
+	for INC in $(CINCS);		\
+	do				\
+	  $(INSTALL_INC) $$INC;		\
+	done
+
+install.lib: $(LIBS)
+	mkdir -m 755 -p $(libdir)
+	for LIB in $(LIBS);		\
+	do				\
+	  $(INSTALL_LIB) $$LIB;		\
+	done
+
+install.man3: $(MAN3S)
+	mkdir -m 755 -p $(man3dir)
+	for MAN in $(MAN3S);		\
+	do				\
+	  $(INSTALL_MAN3) $$MAN;	\
+	  gzip -f9 $(man3dir)/$$MAN;	\
+	done
+
+cc_confirm.o:		cc_confirm.c		cc_machdep.h cc_util.h cc_confirm.h
+cc_debug.o:		cc_debug.c		cc_machdep.h cc_util.h cc_debug.h cc_debug_internal.h
+cc_debug_memdump.o:	cc_debug_memdump.c	cc_machdep.h cc_debug.h cc_debug_internal.h cc_fmt_internal.h cc_memory.h
+cc_debug_print.o:	cc_debug_print.c	cc_machdep.h cc_debug.h cc_debug_internal.h
+cc_dsk_getsize.o:	cc_dsk_getsize.c	cc_machdep.h cc_util.h cc_dsk.h
+cc_fmt_bytes.o:		cc_fmt_bytes.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt.o:		cc_fmt.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_char.o:		cc_fmt_char.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_crlf.o:		cc_fmt_crlf.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_date.o:		cc_fmt_date.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_fmt.o:		cc_fmt_fmt.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_hexdump.o:	cc_fmt_hexdump.c	cc_fmt.h cc_fmt_internal.h
+cc_fmt_int.o:		cc_fmt_int.c		cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_long.o:		cc_fmt_long.c		cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_short.o:		cc_fmt_short.c		cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_sint08.o:	cc_fmt_sint08.c		cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint16.o:	cc_fmt_sint16.c		cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint32.o:	cc_fmt_sint32.c		cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint64.o:	cc_fmt_sint64.c		cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_string.o:	cc_fmt_string.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_ubytes.o:	cc_fmt_ubytes.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_uchar.o:		cc_fmt_uchar.c		cc_fmt.h cc_fmt_internal.h
+cc_fmt_uint08.o:	cc_fmt_uint08.c		cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint16.o:	cc_fmt_uint16.c		cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint32.o:	cc_fmt_uint32.c		cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint64.o:	cc_fmt_uint64.c		cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint.o:		cc_fmt_uint.c		cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_fmt_ulong.o:		cc_fmt_ulong.c		cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_fmt_ushort.o:	cc_fmt_ushort.c		cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_forcefork.o:		cc_forcefork.c		cc_forcefork.h
+cc_log.o:		cc_log.c		cc_log.h cc_fmt.h cc_util.h
+cc_log_file.o:		cc_log_file.c		cc_log.h cc_fmt.h
+cc_log_syslog.o:	cc_log_file.c		cc_log.h cc_fmt.h cc_nextopt.h
+cc_memory.o:		cc_memory.c		cc_memory.h cc_util.h
+cc_nextopt.o:		cc_nextopt.c		cc_nextopt.h
+cc_options.o:		cc_options.c		cc_options.h
+cc_path.o:		cc_path.c		cc_path.h cc_path_internal.h
+cc_path_abs.o:		cc_path_abs.c		cc_path.h cc_path_internal.h cc_memory.h
+cc_path_basename.o:	cc_path_basename.c	cc_path.h cc_path_internal.h cc_memory.h cc_util.h cc_fmt.h
+cc_path_filesz.o:	cc_path_filesz.c	cc_path.h cc_path_internal.h
+cc_path_info.o:		cc_path_info.c		cc_path.h cc_path_internal.h
+cc_path_is.o:		cc_path_is.c		cc_path.h cc_path_internal.h
+cc_path_make.o:		cc_path_make.c		cc_path.h cc_path_internal.h
+cc_path_stat.o:		cc_path_stat.c		cc_path.h cc_path_internal.h cc_memory.h
+cc_pidfile.o:		cc_pidfile.c		cc_pidfile.h cc_fmt.h cc_log.h
+cc_str2bool.o:		cc_str2bool.c		cc_str2bool.h
+cc_str_concat.o:	cc_str_concat.c		cc_str.h
+cc_str_copy.o:		cc_str_copy.c		cc_str.h
+cc_tracer_memory.o:	cc_tracer_memory.c	cc_tracer.h
+cc_tracer_outputs.o:	cc_tracer_outputs.c	cc_tracer.h cc_fmt.h
