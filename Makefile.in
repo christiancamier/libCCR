@@ -104,8 +104,9 @@ INSTALL_MAN3 = $(INSTALL) -o bin  -g bin  -m 644 -t $(man3dir)
 CSRCS	= $(shell echo *.c)
 PUHDRS	= $(shell ls -1 *.h | grep -v _internal)
 PRHDRS	= $(shell ls -1 *.h | grep    _internal)
-COBJS	= $(CSRCS:.c=.o)
-CCLIB	= libCCR.a
+DOBJS	= $(CSRCS:.c=.po)
+SOBJS	= $(CSRCS:.c=.o)
+CCLIB	= libCCR.a libCCR.so
 CINCS	= $(PUHDRS)
 
 all: $(CCLIB)
@@ -114,7 +115,8 @@ install: install.lib install.inc
 
 clean:
 	rm -fr $(CCLIB)
-	rm -fr $(COBJS)
+	rm -fr $(DOBJS)
+	rm -fr $(SOBJS)
 	rm -fr $(CSRCS:.c=.i);
 	rm -fr autom4te.cache config.log config.status
 	rm -fr *~ \#*
@@ -123,12 +125,13 @@ distclean: clean
 	rm -fr Makefile
 	rm -fr cc_machdep.h
 
-libCCR.a: $(COBJS)
+libCCR.a: $(SOBJS)
 	rm -f $@
-	ar q $@ $(COBJS)
+	ar q $@ $(SOBJS)
 	ranlib $@
 
-#libCCR.so: $(SOBJS)
+libCCR.so: $(DOBJS)
+	$(CC) -shared -o $@ $(DOBJS)
 
 install.inc: $(CINCS)
 	mkdir -m 755 -p $(incdir)
