@@ -8,37 +8,6 @@ AC_CONFIG_HEADERS([cc_machdep.h])
 
 AC_SUBST(ccr_top_dir, [`(cd $srcdir/..; pwd;)`])
 
-# Checks for programs.
-AC_PROG_CC
-AC_PROG_RANLIB
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-
-# Checks for libraries.
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_HEADER_STAT
-AC_HEADER_STDBOOL
-AC_HEADER_DIRENT
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h], [], [])
-AC_CHECK_HEADERS([fcntl.h], [], [])
-AC_CHECK_HEADERS([libintl.h], [], [])
-AC_CHECK_HEADERS([limits.h  paths.h], [], [])
-AC_CHECK_HEADERS([stdint.h stdio.h stdio_ext.h stdlib.h string.h strings.h], [], [])
-AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/socket.h sys/time.h], [], [])
-AC_CHECK_HEADERS([syslog.h termios.h unistd.h], [], [])
-
-AC_MSG_CHECKING([architecture word width (32 or 64 bits)])
-AC_RUN_IFELSE(
-	[AC_LANG_PROGRAM([], [return 4 == sizeof(unsigned long) ? 0 : 1;])],
-	[AC_DEFINE([ARCH_32BITS], [], [32 bits architecture]) AC_MSG_RESULT([32 bits])], 
-	[AC_RUN_IFELSE(
-		[AC_LANG_PROGRAM([], [return 8 == sizeof(unsigned long) ? 0 : 1;])],
-		[AC_DEFINE([ARCH_64BITS], [], [64 bits architecture]) AC_MSG_RESULT([64 bits])],
-		[AC_MSG_ERROR([unsuported architecture])])])
-
 AC_MSG_CHECKING([Operating system name])
 ac_ccr_system_name=`uname -s`
 case "${ac_ccr_system_name}" in
@@ -51,7 +20,44 @@ OpenBSD)	AC_DEFINE([OS_OPENBSD], [], [Define if operating system is OpenBSD]);;
 esac
 AC_MSG_RESULT([$ac_ccr_system_name])
 
+AC_MSG_CHECKING([architecture word width (32 or 64 bits)])
+AC_RUN_IFELSE(
+	[AC_LANG_PROGRAM([], [return 4 == sizeof(unsigned long) ? 0 : 1;])],
+	[AC_DEFINE([ARCH_32BITS], [], [32 bits architecture]) AC_MSG_RESULT([32 bits])], 
+	[AC_RUN_IFELSE(
+		[AC_LANG_PROGRAM([], [return 8 == sizeof(unsigned long) ? 0 : 1;])],
+		[AC_DEFINE([ARCH_64BITS], [], [64 bits architecture]) AC_MSG_RESULT([64 bits])],
+		[AC_MSG_ERROR([unsuported architecture])])])
+
 AC_CHECK_FILES([/dev/arandom /dev/random /dev/urandom])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_STAT
+AC_HEADER_STDBOOL
+AC_HEADER_DIRENT
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h], [], [])
+AC_CHECK_HEADERS([fcntl.h], [], [])
+AC_CHECK_HEADERS([libintl.h], [], [])
+AC_CHECK_HEADERS([limits.h  paths.h], [], [])
+AC_CHECK_HEADERS([stddef.h stdint.h stdio.h stdio_ext.h stdlib.h string.h strings.h], [], [])
+AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/socket.h sys/time.h], [], [])
+AC_CHECK_HEADERS([syslog.h termios.h unistd.h], [], [])
+
+# Checks for libraries.
+if test "x$ac_ccr_system_name" = "xLinux"
+then
+  AC_CHECK_HEADERS([bsd/stdlib.h])
+  AC_CHECK_LIB([bsd], [arc4random], [LIBS="$LIBS -lbsd"], [])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -85,7 +91,8 @@ AC_FUNC_ALLOCA
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([alarm atexit dup2 memset pathconf realpath strcasecmp strerror strrchr])
+AC_CHECK_FUNCS([alarm atexit dup2 memset mkdir pathconf realpath strcasecmp strerror strrchr strtol])
+AC_CHECK_FUNCS([arc4random])
 
 AC_DEFINE_UNQUOTED([OS_NAME], "$ac_ccr_system_name", [Operating system name])
 AC_DEFINE_UNQUOTED([DIR_ETC], "`echo $sysconfdir`", [System configuration directory])

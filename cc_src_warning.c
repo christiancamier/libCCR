@@ -15,16 +15,19 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stddef.h>
+#include <stdio.h>
+
 #include "cc_src_warning.h"
 
-extern void  cc_src_warning_add    (struct cc_warning_st *);
+extern void  cc_src_warning_add    (struct cc_src_warning_st *);
 extern void  cc_src_warning_display(void);
 extern int   cc_src_warning_exist  (void);
 extern void  cc_src_warning_walk   (void (*)(const char *));
 
 struct cc_src_warning_st *src_warnings = NULL;
 
-void cc_src_warning_add(struct cc_warning_st *warning)
+void cc_src_warning_add(struct cc_src_warning_st *warning)
 {
 	warning->next = src_warnings;
 	src_warnings = warning;
@@ -33,7 +36,7 @@ void cc_src_warning_add(struct cc_warning_st *warning)
 
 void cc_src_warning_display(void)
 {
-	struct cc_warning_st *p;
+	struct cc_src_warning_st *p;
 	for(p = src_warnings; p; p = p->next)
 		fprintf(stderr, "WARNING: %s\n", p->message);
 	return;
@@ -46,7 +49,7 @@ int cc_src_warning_exists(void)
 
 void cc_src_warning_walk(void (*callback)(const char *))
 {
-	struct cc_warning_st *p;
+	struct cc_src_warning_st *p;
 	for(p = src_warnings; p; p = p->next)
 		callback(p->message);
 	return;

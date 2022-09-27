@@ -27,8 +27,8 @@
 #ifndef __CC_FMT_H__
 #define __CC_FMT_H__
 
-#define cc_fmt_cr(bp, bs)	cc_fmy_char(bp, bs, '\r')
-#define cc_fmt_lf(bp, bs)	cc_fmy_char(bp, bs, '\n')
+#define cc_fmt_cr(bp, bs)	cc_fmt_char(bp, bs, '\r')
+#define cc_fmt_lf(bp, bs)	cc_fmt_char(bp, bs, '\n')
 
 struct tm;
 

@@ -76,7 +76,6 @@ seed_ok:
 
 unsigned long cc_random(void)
 {
-	unsigned long  r;
 #ifdef HAVE_ARC4RANDOM
 # ifdef ARCH_64BITS
 	union {
@@ -86,19 +85,20 @@ unsigned long cc_random(void)
 	erase_random_init();
 	a.v32[0] = arc4random();
 	a.v32[1] = arc4random();
-	r = a.v64;
+	return a.v64
 # else
-	r = arc4random();
+	return arc4random();
 # endif
 #else
+	unsigned long  r;
 	unsigned char *p;
 	size_t         s;
 	for(s = sizeof(unsigned long), p = (unsigned char *)&r; s > 0; s -=1, *(p++) = (unsigned char)(rand() & 0xFF));
-#endif
 	return r;
+#endif
 }
 
-#ifndef HAVE__ARC4RANDOM
+#ifndef HAVE_ARC4RANDOM
 # ifndef SEED_FILE
 CC_SRC_WARNING("CC_RANDOM: No strong PRNG found on your host")
 # endif

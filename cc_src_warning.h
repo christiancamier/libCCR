@@ -28,11 +28,11 @@
 #define __CC_SRC_WARNING_H__
 
 struct cc_src_warning_st {
-	struct cc_warning_st *next;
-	const char           *message;
+	struct cc_src_warning_st *next;
+	const char               *message;
 } erase_warning_t;
 
-extern void  cc_src_warning_add    (struct cc_warning_st *);
+extern void  cc_src_warning_add    (struct cc_src_warning_st *);
 extern void  cc_src_warning_display(void);
 extern int   cc_src_warning_exist  (void);
 extern void  cc_src_warning_walk   (void (*)(const char *));
