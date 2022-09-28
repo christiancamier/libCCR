@@ -30,7 +30,7 @@
 struct cc_src_warning_st {
 	struct cc_src_warning_st *next;
 	const char               *message;
-} erase_warning_t;
+};
 
 extern void  cc_src_warning_add    (struct cc_src_warning_st *);
 extern void  cc_src_warning_display(void);

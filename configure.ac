@@ -94,7 +94,7 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([alarm atexit dup2 memset mkdir pathconf realpath strcasecmp strerror strrchr strtol])
-AC_CHECK_FUNCS([arc4random])
+AC_CHECK_FUNCS([arc4random arc4random_stir])
 
 AC_DEFINE_UNQUOTED([OS_NAME], "$ac_ccr_system_name", [Operating system name])
 AC_DEFINE_UNQUOTED([DIR_ETC], "`echo $sysconfdir`", [System configuration directory])

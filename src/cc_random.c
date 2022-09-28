@@ -25,7 +25,9 @@
 # endif
 #endif
 
+#if defined(OS_FREEBSD) || defined(OS_NETBSD) || defined(OS_OPENBSD)
 #include <stdlib.h>
+#endif
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -49,7 +51,9 @@ extern unsigned long cc_random(void);
 void cc_random_init(void)
 {
 #ifdef HAVE_ARC4RANDOM
+# ifdef HAVE_ARC4RANDOM_STIR
 	arc4random_stir();
+# endif
 #else
 	unsigned int seed;
 # ifdef SEED_FILE

@@ -33,4 +33,4 @@
 # include "cc_fmt_sintXX.h"
 # undef __FCT
 # undef __TYP
-#endif HAVE_SINT64_T
+#endif /* HAVE_SINT64_T */

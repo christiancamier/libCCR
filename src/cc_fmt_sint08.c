@@ -24,7 +24,7 @@
  * Rev : 1.0 (01/22/2008)
  */
 
-#incude "cc_machdep.h"
+#include "cc_machdep.h"
 #include <stdint.h>
 
 #define __TYP int8_t

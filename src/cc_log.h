@@ -35,7 +35,7 @@ struct cc_log_driver_info {
 	const char *desc;
 };
 
-#if defined(_STDARG_H) || defined(_ANSI_STDARG_H_)
+#if defined(_STDARG_H) || defined(_ANSI_STDARG_H_) || defined(_VA_LIST_DECLARED)
 struct cc_logger_st {
 	struct cc_logger_st  *next;
 	const char           *name;
