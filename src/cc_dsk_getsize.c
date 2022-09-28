@@ -27,7 +27,7 @@
 # include <linux/fs.h>
 #endif
 
-#ifdef OS_BSD
+#ifdef OS_FREEBSD
 # include <sys/disk.h>
 #endif
 
