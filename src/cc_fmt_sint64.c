@@ -23,10 +23,14 @@
  *
  * Rev : 1.0 (01/22/2008)
  */
+#include "cc_machdep.h"
+
 #include <stdint.h>
 
-#define __TYP int64_t
-#define __FCT cc_fmt_sint64
-#include "cc_fmt_sintXX.h"
-#undef __FCT
-#undef __TYP
+#ifdef HAVE_SINT64_T
+# define __TYP int64_t
+# define __FCT cc_fmt_sint64
+# include "cc_fmt_sintXX.h"
+# undef __FCT
+# undef __TYP
+#endif HAVE_SINT64_T

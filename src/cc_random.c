@@ -15,13 +15,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "cc_machdep.h"
+
 #include <sys/types.h>
+
+#if defined HAVE_ARC4RANDOM
+# if defined OS_LINUX
+#  include <bsd/stdlib.h>
+# endif
+#endif
+
 #include <stdlib.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#include "cc_machdep.h"
 #include "cc_src_warning.h"
 #include "cc_random.h"
 
@@ -82,10 +90,9 @@ unsigned long cc_random(void)
 		unsigned long v64;
 		u_int32_t     v32[2];
 	} a;
-	erase_random_init();
 	a.v32[0] = arc4random();
 	a.v32[1] = arc4random();
-	return a.v64
+	return a.v64;
 # else
 	return arc4random();
 # endif

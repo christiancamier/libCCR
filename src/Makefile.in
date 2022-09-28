@@ -1,0 +1,236 @@
+#  Copyright (c) 2022
+#  	Christian CAMIER <christian.c@promethee.services>
+#  
+#  Permission to use, copy, modify, and distribute this software for any
+#  purpose with or without fee is hereby granted, provided that the above
+#  copyright notice and this permission notice appear in all copies.
+#  
+#  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+#  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+#  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+#  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+#  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+#  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+#
+# #@ "Makefile"
+#	-- CC Library: Compilation rules
+#
+# Author : Christian CAMIER
+#
+# Rev : 1.0 (01/21/2008)
+#
+
+include @topdir@/Makefile.inc
+
+#
+# Target directories definitions
+#
+#!START
+PREFIX        ?= @prefix@
+prefix        ?= @prefix@
+exec_prefix   ?= @exec_prefix@
+bindir        ?= @bindir@
+sbindir       ?= @sbindir@
+sysconfdir    ?= @sysconfdir@
+sbindir       ?= @sbindir@
+includedir    ?= @includedir@
+oldincludedir ?= @oldincludedir@
+libdir        ?= @libdir@
+libexecdir    ?= @libexecdir@
+datarootdir   ?= @datarootdir@
+mandir        ?= @mandir@
+man1dir       ?= $(mandir)/man1
+man3dir       ?= $(mandir)/man3
+docdir        ?= @docdir@
+infodir       ?= @infodir@
+localstatedir ?= @localstatedir@
+localedir     ?= @localedir@
+htmldir       ?= @htmldir@
+dvidir        ?= @dvidir@
+pdfdir        ?= @pdfdir@
+psdir         ?= @psdir@
+#!END
+
+#
+# Behaviour options
+#
+
+MACROS =				\
+	-DSYSCONFDIR=\"$(sysconfdir)\"	\
+	-DPREFIX=\"$(prefix)\"
+
+#
+# Compilers options
+#
+
+MAKE    ?= make
+SUBMAKE  = $(MAKE) -f Makefile
+CC	?= LANG=C gcc
+CFLAGS	?= -g -Wall -Wunused-variable -Werror $(MACROS)
+LD	?= $(CC)
+
+CSRCS	= cc_confirm.c		\
+          cc_debug.c		\
+          cc_debug_memdup.c	\
+          cc_debug_print.c	\
+          cc_dsk_getsize.c	\
+          cc_fmt_bytes.c	\
+          cc_fmt.c		\
+          cc_fmt_char.c		\
+          cc_fmt_crlf.c		\
+          cc_fmt_date.c		\
+          cc_fmt_doc.c		\
+          cc_fmt_fmt.c		\
+          cc_fmt_hexdump.c	\
+          cc_fmt_int.c		\
+          cc_fmt_long.c		\
+          cc_fmt_short.c	\
+          cc_fmt_sint08.c	\
+          cc_fmt_sint16.c	\
+          cc_fmt_sint32.c	\
+          cc_fmt_sint64.c	\
+          cc_fmt_string.c	\
+          cc_fmt_ubytes.c	\
+          cc_fmt_uchar.c	\
+          cc_fmt_uint08.c	\
+          cc_fmt_uint16.c	\
+          cc_fmt_uint32.c	\
+          cc_fmt_uint64.c	\
+          cc_fmt_uint.c		\
+          cc_fmt_ulong.c	\
+          cc_fmt_ushort.c	\
+          cc_forcefork.c	\
+          cc_log.c		\
+          cc_log_file.c		\
+          cc_log_syslog.c	\
+          cc_memory.c		\
+          cc_nextopt.c		\
+          cc_options.c		\
+          cc_path.c		\
+          cc_path_abs.c		\
+          cc_path_basename.c	\
+          cc_path_filesz.c	\
+          cc_path_info.c	\
+          cc_path_is.c		\
+          cc_path_make.c	\
+          cc_path_stat.c	\
+          cc_pidfile.c		\
+          cc_random.c		\
+          cc_src_warning.c	\
+          cc_str2bool.c		\
+          cc_str_concat.c	\
+          cc_str_copy.c		\
+          cc_tracer_memory.c	\
+          cc_tracer_outputs.c
+
+CINCS   = cc_buf.h		\
+          cc_confirm.h		\
+          cc_debug.h		\
+          cc_dsk.h		\
+          cc_fmt.h		\
+          cc_forcefork.h	\
+          cc_in.h		\
+          cc_log.h		\
+          cc_memory.h		\
+          cc_nextopt.h		\
+          cc_options.h		\
+          cc_path.h		\
+          cc_pidfile.h		\
+          cc_random.h		\
+          cc_src_warning.h	\
+          cc_str2bool.h		\
+          cc_str.h		\
+          cc_tracer.h		\
+          cc_util.h
+
+PINCS   = cc_debug_internal.h	\
+          cc_fmt_internal.h	\
+          cc_fmt_signed.h	\
+          cc_fmt_sintXX.h	\
+          cc_fmt_uintXX.h	\
+          cc_fmt_unsigned.h	\
+          cc_machdep.h		\
+          cc_path_internal.h
+
+DOBJS	= $(CSRCS:.c=.po)
+SOBJS	= $(CSRCS:.c=.o)
+CCLIB	= libCCR.a libCCR.so
+
+all install: $(CCLIB)
+	cp $(CCLIB) @topdir@/lib
+	cp $(CINCS) @topdir@/include/CCR
+
+clean:
+	rm -fr $(CCLIB)
+	rm -fr $(DOBJS)
+	rm -fr $(SOBJS)
+	rm -fr $(CSRCS:.c=.i);
+	rm -fr autom4te.cache config.log config.status
+	rm -fr *~ \#*
+
+distclean: clean
+	rm -fr Makefile
+	rm -fr cc_machdep.h
+
+libCCR.a: $(SOBJS)
+	rm -f $@
+	ar q $@ $(SOBJS)
+	ranlib $@
+
+libCCR.so: $(DOBJS)
+	$(CC) -shared -o $@ $(DOBJS)
+
+cc_confirm.o        cc_confirm.po:		cc_confirm.c		cc_machdep.h cc_util.h cc_confirm.h
+cc_debug.o          cc_debug.po:		cc_debug.c		cc_machdep.h cc_util.h cc_debug.h cc_debug_internal.h
+cc_debug_memdump.o  cc_debug_memdump.po:	cc_debug_memdump.c	cc_machdep.h cc_debug.h cc_debug_internal.h cc_fmt_internal.h cc_memory.h
+cc_debug_print.o    cc_debug_print.po:		cc_debug_print.c	cc_machdep.h cc_debug.h cc_debug_internal.h
+cc_dsk_getsize.o    cc_dsk_getsize.po:		cc_dsk_getsize.c	cc_machdep.h cc_util.h cc_dsk.h
+cc_fmt_bytes.o      cc_fmt_bytes.po:		cc_fmt_bytes.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt.o            cc_fmt.po:			cc_fmt.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_char.o       cc_fmt_char.po:		cc_fmt_char.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_crlf.o       cc_fmt_crlf.po:		cc_fmt_crlf.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_date.o       cc_fmt_date.po:		cc_fmt_date.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_fmt.o        cc_fmt_fmt.po:		cc_fmt_fmt.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_hexdump.o    cc_fmt_hexdump.po:		cc_fmt_hexdump.c	cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_int.o        cc_fmt_int.po:		cc_fmt_int.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_long.o       cc_fmt_long.po:		cc_fmt_long.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_short.o      cc_fmt_short.po:		cc_fmt_short.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_signed.h
+cc_fmt_sint08.o     cc_fmt_sint08.po:		cc_fmt_sint08.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint16.o     cc_fmt_sint16.po:		cc_fmt_sint16.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint32.o     cc_fmt_sint32.po:		cc_fmt_sint32.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_sint64.o     cc_fmt_sint64.po:		cc_fmt_sint64.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_sintXX.h
+cc_fmt_string.o     cc_fmt_string.po:		cc_fmt_string.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_ubytes.o     cc_fmt_ubytes.po:		cc_fmt_ubytes.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_uchar.o      cc_fmt_uchar.po:		cc_fmt_uchar.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h
+cc_fmt_uint08.o     cc_fmt_uint08.po:		cc_fmt_uint08.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint16.o     cc_fmt_uint16.po:		cc_fmt_uint16.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint32.o     cc_fmt_uint32.po:		cc_fmt_uint32.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint64.o     cc_fmt_uint64.po:		cc_fmt_uint64.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_uintXX.h
+cc_fmt_uint.o       cc_fmt_uint.po:		cc_fmt_uint.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_fmt_ulong.o      cc_fmt_ulong.po:		cc_fmt_ulong.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_fmt_ushort.o     cc_fmt_ushort.po:		cc_fmt_ushort.c		cc_machdep.h cc_fmt.h cc_fmt_internal.h cc_fmt_unsigned.h
+cc_forcefork.o      cc_forcefork.po:		cc_forcefork.c		cc_machdep.h cc_forcefork.h
+cc_log.o            cc_log.po:			cc_log.c		cc_machdep.h cc_log.h cc_fmt.h cc_util.h
+cc_log_file.o       cc_log_file.po:		cc_log_file.c		cc_machdep.h cc_log.h cc_fmt.h
+cc_log_syslog.o     cc_log_syslog.po:		cc_log_syslog.c		cc_machdep.h cc_log.h cc_fmt.h cc_nextopt.h
+cc_memory.o         cc_memory.po:		cc_memory.c		cc_machdep.h cc_memory.h cc_util.h
+cc_nextopt.o        cc_nextopt.po:		cc_nextopt.c		cc_machdep.h cc_nextopt.h
+cc_options.o        cc_options.po:		cc_options.c		cc_machdep.h cc_options.h
+cc_path.o           cc_path.po:			cc_path.c		cc_machdep.h cc_path.h cc_path_internal.h
+cc_path_abs.o       cc_path_abs.po:		cc_path_abs.c		cc_machdep.h cc_path.h cc_path_internal.h cc_memory.h
+cc_path_basename.o  cc_path_basename.po:	cc_path_basename.c	cc_machdep.h cc_path.h cc_path_internal.h cc_memory.h cc_util.h cc_fmt.h
+cc_path_filesz.o    cc_path_filesz.po:		cc_path_filesz.c	cc_machdep.h cc_path.h cc_path_internal.h
+cc_path_info.o      cc_path_info.po:		cc_path_info.c		cc_machdep.h cc_path.h cc_path_internal.h
+cc_path_is.o        cc_path_is.po:		cc_path_is.c		cc_machdep.h cc_path.h cc_path_internal.h
+cc_path_make.o      cc_path_make.po:		cc_path_make.c		cc_machdep.h cc_path.h cc_path_internal.h
+cc_path_stat.o      cc_path_stat.po:		cc_path_stat.c		cc_machdep.h cc_path.h cc_path_internal.h cc_memory.h
+cc_pidfile.o        cc_pidfile.po:		cc_pidfile.c		cc_machdep.h cc_pidfile.h cc_fmt.h cc_log.h
+cc_random.o         cc_random.po:		cc_random.c		cc_machdep.h cc_random.h cc_src_warning.h
+cc_src_warning.o    cc_src_warning.po:		cc_src_warning.c	cc_machdep.h cc_src_warning.h
+cc_str2bool.o       cc_str2bool.po:		cc_str2bool.c		cc_machdep.h cc_str2bool.h
+cc_str_concat.o     cc_str_concat.po:		cc_str_concat.c		cc_machdep.h cc_str.h
+cc_str_copy.o       cc_str_copy.po:		cc_str_copy.c		cc_machdep.h cc_str.h
+cc_tracer_memory.o  cc_tracer_memory.po:	cc_tracer_memory.c	cc_machdep.h cc_tracer.h
+cc_tracer_outputs.o cc_tracer_outputs.po:	cc_tracer_outputs.c	cc_machdep.h cc_tracer.h cc_fmt.h

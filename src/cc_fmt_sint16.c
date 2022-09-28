@@ -16,16 +16,18 @@
  */
 
 /*
- * #@ "cc_fmt_uint64.c"
- *	-- CC Utilities: Unsigned integer buffer formating
+ * #@ "cc_fmt_sint16.c"
+ *	-- CC Utilities: Signed integer buffer formating
  *
  * Author : Christian CAMIER
  *
  * Rev : 1.0 (01/22/2008)
  */
+#include "cc_machdep.h"
 #include <stdint.h>
 
-#define __TYP uint64_t
-#define __FCT cc_fmt_uint64
-#include "cc_fmt_uintXX.h"
+#define __TYP int16_t
+#define __FCT cc_fmt_sint16
+#include "cc_fmt_sintXX.h"
 #undef __FCT
+#undef __TYP

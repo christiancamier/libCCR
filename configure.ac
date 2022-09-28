@@ -3,10 +3,8 @@
 
 AC_PREREQ([2.69])
 AC_INIT(cc_library, 0.2, christian.c@promethee.services)
-AC_CONFIG_SRCDIR([cc_path.c])
-AC_CONFIG_HEADERS([cc_machdep.h])
-
-AC_SUBST(ccr_top_dir, [`(cd $srcdir/..; pwd;)`])
+AC_CONFIG_SRCDIR([src/cc_path.c])
+AC_CONFIG_HEADERS([src/cc_machdep.h])
 
 AC_MSG_CHECKING([Operating system name])
 ac_ccr_system_name=`uname -s`
@@ -20,6 +18,16 @@ OpenBSD)	AC_DEFINE([OS_OPENBSD], [], [Define if operating system is OpenBSD]);;
 esac
 AC_MSG_RESULT([$ac_ccr_system_name])
 
+AC_CHECK_FILES([/dev/arandom /dev/random /dev/urandom])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+# Architecture check
 AC_MSG_CHECKING([architecture word width (32 or 64 bits)])
 AC_RUN_IFELSE(
 	[AC_LANG_PROGRAM([], [return 4 == sizeof(unsigned long) ? 0 : 1;])],
@@ -29,14 +37,8 @@ AC_RUN_IFELSE(
 		[AC_DEFINE([ARCH_64BITS], [], [64 bits architecture]) AC_MSG_RESULT([64 bits])],
 		[AC_MSG_ERROR([unsuported architecture])])])
 
-AC_CHECK_FILES([/dev/arandom /dev/random /dev/urandom])
-
-# Checks for programs.
-AC_PROG_CXX
-AC_PROG_CC
-AC_PROG_RANLIB
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
+# Makefiles substitutions
+AC_SUBST(topdir, `pwd`)
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -96,5 +98,7 @@ AC_CHECK_FUNCS([arc4random])
 
 AC_DEFINE_UNQUOTED([OS_NAME], "$ac_ccr_system_name", [Operating system name])
 AC_DEFINE_UNQUOTED([DIR_ETC], "`echo $sysconfdir`", [System configuration directory])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+		 Makefile.inc
+		 src/Makefile])
 AC_OUTPUT

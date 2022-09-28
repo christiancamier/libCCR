@@ -27,7 +27,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "cc_util.h"
 #include "cc_confirm.h"
 
 extern int cc_confirm(int, const char *, ...);

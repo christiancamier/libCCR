@@ -16,17 +16,19 @@
  */
 
 /*
- * #@ "cc_fmt_sint32.c"
+ * #@ "cc_fmt_sint08.c"
  *	-- CC Utilities: Signed integer buffer formating
  *
  * Author : Christian CAMIER
  *
  * Rev : 1.0 (01/22/2008)
  */
+
+#incude "cc_machdep.h"
 #include <stdint.h>
 
-#define __TYP int32_t
-#define __FCT cc_fmt_sint32
+#define __TYP int8_t
+#define __FCT cc_fmt_sint08
 #include "cc_fmt_sintXX.h"
 #undef __FCT
 #undef __TYP
