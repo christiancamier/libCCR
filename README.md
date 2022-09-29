@@ -7,3 +7,9 @@ I wrote, and made easily reusable in other codes :
 - Formating functions (cc_fmt_*)
 - Logging function
 - etc.
+
+# OS Compatibility
+## Linux
+## FreeBSD
+## NetBSD
+## OpenBSD
