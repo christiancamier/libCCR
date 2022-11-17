@@ -30,6 +30,7 @@
 #endif
 #include <fcntl.h>
 #include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "cc_src_warning.h"
