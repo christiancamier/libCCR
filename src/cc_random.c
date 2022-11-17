@@ -25,9 +25,7 @@
 # endif
 #endif
 
-#if defined(OS_FREEBSD) || defined(OS_NETBSD) || defined(OS_OPENBSD)
 #include <stdlib.h>
-#endif
 #include <fcntl.h>
 #include <stdio.h>
 #include <time.h>
