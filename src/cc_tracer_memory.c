@@ -74,7 +74,8 @@ void cc_tr_meminfo(void)
 void *cc_tr_realloc(const char *source, size_t line, const char *function, void *ptr, size_t size)
 {
 	void   *result;
-	result = realloc(ptr, size);
+	void   *x = ptr;
+	result = realloc(x, size);
 	cc_tr_printf(source, line, "%s - realloc %p new size %lu - returned %p", function, ptr, size, result);
 	return result;
 }

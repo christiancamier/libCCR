@@ -38,6 +38,16 @@ clean distclean: Force
 	done
 	$(SUBMAKE) _$@
 
+dist: Force
+	mkdir -p @topdir@/dist/${prefix}/bin
+	mkdir -p @topdir@/dist/${prefix}/etc
+	mkdir -p @topdir@/dist/${prefix}/share/man/man{5,8}
+	for lang in (cd @topdir@/doc; echo ??); 			\
+	do								\
+	  mkdir -p @topdir@/dist/${prefix}/share/$${lang}/man/man{5,8};	\
+	done
+	mkdir -p @topdir@/dist/${prefix}/share/inotify-daemon
+
 _all: Force
 	:
 
